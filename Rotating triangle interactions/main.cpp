@@ -1,43 +1,77 @@
+/*
+What is the purpose of this project?
+I want to be able to handle physically accurate interactions of rotating triangles. (1)
+
+*/
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "TrianglePlate.h"
+#include "Vector.h"
 
 using namespace std;
 
+void drawTrianglePlate(const TrianglePlate& plate, sf::RenderWindow& window)
+{
+    sf::VertexArray v(sf::LineStrip, 4);
+    Vector a = plate.centerOfMass + plate.relativea.rotate(plate.angle);
+    Vector b = plate.centerOfMass + plate.relativeb.rotate(plate.angle);
+    Vector c = plate.centerOfMass + plate.relativec.rotate(plate.angle);
+    
+    v[0].position = sf::Vector2f(a.x, a.y);
+    v[1].position = sf::Vector2f(b.x, b.y);
+    v[2].position = sf::Vector2f(c.x, c.y);
+    v[3] = v[0];
+
+    window.draw(v);
+}
+
 int main()
 {
-  sf::RenderWindow window(sf::VideoMode(500, 500), "SFML works!");
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
+    sf::RenderWindow window(sf::VideoMode(900, 900), "Rotating triangle interactions");
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Green);
 
-  sf::Clock frameClock;
+    sf::View view;
+    view.setSize(sf::Vector2f(100, -100));
+    view.setCenter(sf::Vector2f(50, 50));
+    window.setView(view);
 
-  while (window.isOpen()) {
-    sf::Event event;
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed)
-        window.close();
+    sf::Clock frameClock;
+
+    TrianglePlate plate;
+    plate.setPlate(Vector(50 + 30, 50 + 10), Vector(50 + 33, 50 + 16), Vector(50 + 40, 50 + 10), 1);
+    
+    while (window.isOpen()) 
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                window.close();
+            }
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            shape.move(1, 1);
+            sf::sleep(sf::seconds(0.1));
+        }
+
+        float dt = frameClock.restart().asSeconds();
+        dt = 0.000001;
+
+        Vector a = plate.centerOfMass + plate.relativea.rotate(plate.angle);
+        
+        //plate.applyForce(a, Vector(0, -0.001));
+        plate.applyForce(a, (a - plate.centerOfMass).perpendicular());
+        plate.update(dt);
+
+        window.clear();
+        drawTrianglePlate(plate, window);
+        window.display();
+
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-      // left key is pressed: move our character
-      shape.move(1, 1);
-      sf::sleep(sf::seconds(0.1));
-    }
-
-    float dt = frameClock.restart().asSeconds();
-
-    // v = dp/dt  --->   dp = v * dt
-    // position += dp
-    ///shape.move(100.0f * sf::Vector2f(cos(3.14 / 6), sin(3.14 / 6)) * dt);
-
-    cout << 1 / dt << endl;
-
-    window.clear();
-    window.draw(shape);
-    window.display();
-
-    // sf::sleep(sf::seconds(0.01));
-  }
-
-  return 0;
+    return 0;
 }
