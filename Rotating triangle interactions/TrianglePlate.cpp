@@ -58,3 +58,16 @@ void TrianglePlate::clearForces()
 {
 	linearForce = Vector(0, 0);
 }
+
+//bool doIntersect(TrianglePlate inside, TrianglePlate outside)
+//{
+//	Vector a1 = inside.centerOfMass + inside.relativea.rotate(inside.angle);
+//	Vector b1 = inside.centerOfMass + inside.relativeb.rotate(inside.angle);
+//	Vector c1 = inside.centerOfMass + inside.relativec.rotate(inside.angle);
+//
+//	Vector a2 = outside.centerOfMass + outside.relativea.rotate(outside.angle);
+//	Vector b2 = outside.centerOfMass + outside.relativeb.rotate(outside.angle);
+//	Vector c2 = outside.centerOfMass + outside.relativec.rotate(outside.angle);
+//
+//	return 0;
+//}

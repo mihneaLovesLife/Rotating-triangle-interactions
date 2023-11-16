@@ -27,5 +27,7 @@ public:
 Vector operator * (const double scalar, const Vector& v);
 double dot(Vector a, Vector b);
 double distanceSquared(Vector a, Vector b);
-double distance(Vector a, Vector b);
+double getDistance(Vector a, Vector b);
 double cross(Vector a, Vector b);
+double getSignedDoubleArea(Vector a, Vector b, Vector c);
+double getArea(Vector a, Vector b, Vector c);

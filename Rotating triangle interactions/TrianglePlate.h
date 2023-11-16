@@ -27,3 +27,6 @@ public:
 	void applyForce(Vector position, Vector force);
 	void clearForces();
 };
+
+//bool doIntersect(TrianglePlate inside, TrianglePlate outside);
+//double getDistance(TrianglePlate p1, TrianglePlate p2);

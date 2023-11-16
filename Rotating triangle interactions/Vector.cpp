@@ -84,7 +84,7 @@ double distanceSquared(Vector a, Vector b)
 	return dot(a - b, a - b);
 }
 
-double distance(Vector a, Vector b)
+double getDistance(Vector a, Vector b)
 {
 	return sqrt(distanceSquared(a, b));
 }
@@ -97,4 +97,14 @@ double cross(Vector a, Vector b)
 Vector operator * (const double scalar, const Vector& v)
 {
 	return Vector(scalar * v.x, scalar * v.y);
+}
+
+double getSignedDoubleArea(Vector a, Vector b, Vector c)
+{
+	return cross(b - a, c - a);
+}
+
+double getArea(Vector a, Vector b, Vector c)
+{
+	return abs(0.5 * getSignedDoubleArea(a, b, c));
 }

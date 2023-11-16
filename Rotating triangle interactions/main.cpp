@@ -48,6 +48,7 @@ int main()
     points.push_back(Vector(10, 10));
     points.push_back(Vector(30, 30));
     points.push_back(Vector(20, 20));
+    points.push_back(Vector(40, 40));
 
     int hold = -1;
 
@@ -72,7 +73,7 @@ int main()
             hold = -1;
             for (int i = 0; i < (int)points.size(); i++)
             {
-                if (distance(points[i], location) < 1)
+                if (getDistance(points[i], location) < 1)
                 {
                     hold = i;
                 }
@@ -98,7 +99,7 @@ int main()
         }
 
         float dt = frameClock.restart().asSeconds();
-        dt = 0.00001;
+        //dt = 0.00001;
 
 
         Vector a = plate.centerOfMass + plate.relativea.rotate(plate.angle);
@@ -115,7 +116,7 @@ int main()
         window.clear();
 
         {
-            assert((int)points.size() == 3);
+            assert((int)points.size() == 4);
 
             {
                 Vector p = Segment(points[0], points[1]).nearestPoint(points[2]);
@@ -128,13 +129,18 @@ int main()
                 window.draw(circleShape);
             }
 
-            sf::VertexArray lv(sf::Lines, 2);
-            for (int i = 0; i < 2; i++)
+            for (int j = 0; j <= 1; j++)
             {
-                lv[i].position = sf::Vector2f(points[i].x, points[i].y);
+                sf::VertexArray lv(sf::Lines, 2);
+                for (int i = 0; i < 2; i++)
+                {
+                    lv[i].position = sf::Vector2f(points[2 * j + i].x, points[2 * j + i].y);
+                }
+                window.draw(lv);
             }
-            window.draw(lv);
 
+            cout << " = " << doIntersect(Segment(points[0], points[1]), Segment(points[2], points[3])) << "\n";
+            
             for (int i = 0; i < (int)points.size(); i++)
             {
                 sf::CircleShape circleShape;

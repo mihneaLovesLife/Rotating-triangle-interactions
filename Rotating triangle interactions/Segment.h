@@ -12,4 +12,7 @@ public:
 	Segment(Vector a, Vector b);
 
 	Vector nearestPoint(Vector point);
+	double distanceToPoint(Vector point);
 };
+
+bool doIntersect(Segment segment1, Segment segment2);
