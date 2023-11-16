@@ -13,11 +13,6 @@ Vector::Vector() :
 {
 }
 
-Vector Vector::rotateAround(const Vector& origin, const double angle) const
-{
-	return (Vector(x, y) - origin).rotate(angle) + origin;
-}
-
 Vector Vector::rotate(const double angle) const
 {
 	double Sin = sin(angle);
@@ -27,9 +22,9 @@ Vector Vector::rotate(const double angle) const
 	return Vector(nx, ny);
 }
 
-Vector Vector::normalize() const
+Vector Vector::rotateAround(const Vector& origin, const double angle) const
 {
-	return *this / norm();
+	return (Vector(x, y) - origin).rotate(angle) + origin;
 }
 
 double Vector::normSquared() const
@@ -40,6 +35,11 @@ double Vector::normSquared() const
 double Vector::norm() const
 {
 	return sqrt(normSquared());
+}
+
+Vector Vector::normalize() const
+{
+	return *this / norm();
 }
 
 Vector Vector::operator * (const double scalar) const
@@ -84,7 +84,17 @@ double distanceSquared(Vector a, Vector b)
 	return dot(a - b, a - b);
 }
 
+double distance(Vector a, Vector b)
+{
+	return sqrt(distanceSquared(a, b));
+}
+
 double cross(Vector a, Vector b)
 {
 	return dot(a.perpendicular(), b);
+}
+
+Vector operator * (const double scalar, const Vector& v)
+{
+	return Vector(scalar * v.x, scalar * v.y);
 }

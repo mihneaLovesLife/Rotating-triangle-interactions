@@ -146,11 +146,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Segment.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="TrianglePlate.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Segment.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="TrianglePlate.h" />
   </ItemGroup>
