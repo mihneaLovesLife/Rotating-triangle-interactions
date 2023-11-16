@@ -52,19 +52,16 @@ int main()
             }
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        {
-            shape.move(1, 1);
-            sf::sleep(sf::seconds(0.1));
-        }
-
         float dt = frameClock.restart().asSeconds();
-        dt = 0.000001;
+        dt = 0.00001;
 
         Vector a = plate.centerOfMass + plate.relativea.rotate(plate.angle);
         
         //plate.applyForce(a, Vector(0, -0.001));
-        plate.applyForce(a, (a - plate.centerOfMass).perpendicular());
+        Vector dif = Vector(0, 1);
+        plate.applyForce(plate.centerOfMass + Vector(0, 1) * 0.1, Vector(-1, 0));
+        plate.applyForce(plate.centerOfMass - Vector(0, 1) * 0.1, Vector(+1, 0));
+        // forces couple
         plate.update(dt);
 
         window.clear();

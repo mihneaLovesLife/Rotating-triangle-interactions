@@ -2,8 +2,6 @@
 
 #include "Vector.h"
 
-
-
 class TrianglePlate
 {
 public:
@@ -28,5 +26,4 @@ public:
 
 	void applyForce(Vector position, Vector force);
 	void clearForces();
-
 };

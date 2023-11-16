@@ -12,6 +12,9 @@ public:
 	Vector rotateAround(const Vector& origin, const double angle) const;
 	Vector rotate(const double angle) const;
 	Vector perpendicular() const;
+	Vector normalize() const;
+	double norm() const;
+	double normSquared() const;
 
 	Vector operator + (const Vector& rhs) const;
 	Vector operator - (const Vector& rhs) const;
@@ -23,3 +26,4 @@ public:
 
 double dot(Vector a, Vector b);
 double distanceSquared(Vector a, Vector b);
+double cross(Vector a, Vector b);
