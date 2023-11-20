@@ -25,6 +25,9 @@
     <Filter Include="Source Files\InputManager">
       <UniqueIdentifier>{f66c2103-5ff2-4d55-8cc6-0abcf904d09a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Triangle">
+      <UniqueIdentifier>{5d487858-6cce-4696-8879-6dfa3c4e8178}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,6 +45,9 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files\InputManager</Filter>
     </ClCompile>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>Source Files\Triangle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TrianglePlate.h">
@@ -55,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Source Files\InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.h">
+      <Filter>Source Files\Triangle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

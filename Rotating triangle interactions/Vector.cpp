@@ -69,6 +69,13 @@ Vector& Vector::operator += (const Vector& rhs)
 	return *this;
 }
 
+Vector& Vector::operator -= (const Vector& rhs)
+{
+	x -= rhs.x;
+	y -= rhs.y;
+	return *this;
+}
+
 Vector Vector::perpendicular() const
 {
 	return Vector(-y, x);

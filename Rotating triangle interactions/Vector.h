@@ -22,6 +22,7 @@ public:
 	Vector operator / (const double scalar) const;
 
 	Vector& operator += (const Vector& rhs);
+	Vector& operator -= (const Vector& rhs);
 };
 
 Vector operator * (const double scalar, const Vector& v);

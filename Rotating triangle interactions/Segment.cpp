@@ -1,4 +1,8 @@
 #include "Segment.h"
+#include <cassert>
+#include <algorithm>
+
+using namespace std;
 
 Segment::Segment()
 {
@@ -10,10 +14,6 @@ Segment::Segment(Vector a, Vector b) :
 {
 
 }
-
-#include <iostream>
-
-using namespace std;
 
 Vector Segment::nearestPoint(Vector p)
 {
@@ -88,4 +88,17 @@ bool doIntersect(Segment s1, Segment s2)
 	}
 
 	return false;
+}
+
+Vector getIntersection(Segment segment1, Segment segment2)
+{
+	assert(doIntersect(segment1, segment2));
+
+	Vector A1 = segment1.a;
+	Vector B1 = segment1.b;
+
+	Vector A2 = segment2.a;
+	Vector B2 = segment2.b;
+
+	return ((B1 - A1) * (cross(A2 - A1, B2 - A2) / cross(B1 - A1, B2 - A2))) + A1;
 }

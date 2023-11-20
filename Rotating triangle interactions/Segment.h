@@ -16,3 +16,4 @@ public:
 };
 
 bool doIntersect(Segment segment1, Segment segment2);
+Vector getIntersection(Segment segment1, Segment segment2);

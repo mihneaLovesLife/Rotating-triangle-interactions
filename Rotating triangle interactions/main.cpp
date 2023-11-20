@@ -6,6 +6,7 @@ I want to be able to handle physically accurate interactions of rotating triangl
 
 #include "TrianglePlate.h"
 #include "Vector.h"
+#include "Triangle.h"
 #include "Segment.h"
 #include "InputManager.h"
 
@@ -48,6 +49,8 @@ int main()
     points.push_back(Vector(10, 10));
     points.push_back(Vector(30, 30));
     points.push_back(Vector(20, 20));
+    points.push_back(Vector(40, 40));
+    points.push_back(Vector(40, 40));
     points.push_back(Vector(40, 40));
 
     int hold = -1;
@@ -116,30 +119,72 @@ int main()
         window.clear();
 
         {
-            assert((int)points.size() == 4);
+            assert((int)points.size() == 6);
 
-            {
-                Vector p = Segment(points[0], points[1]).nearestPoint(points[2]);
-                //cout << " = " << p.x << " " << p.y << "\n";
-                sf::CircleShape circleShape;
-                circleShape.setRadius(1.5);
-                circleShape.setOrigin(sf::Vector2f(1, 1) * circleShape.getRadius());
-                circleShape.setPosition(sf::Vector2f(p.x, p.y));
-                circleShape.setFillColor(sf::Color::Green);
-                window.draw(circleShape);
-            }
+            //{
+            //    Vector p = Segment(points[0], points[1]).nearestPoint(points[2]);
+            //    //cout << " = " << p.x << " " << p.y << "\n";
+            //    sf::CircleShape circleShape;
+            //    circleShape.setRadius(1.5);
+            //    circleShape.setOrigin(sf::Vector2f(1, 1) * circleShape.getRadius());
+            //    circleShape.setPosition(sf::Vector2f(p.x, p.y));
+            //    circleShape.setFillColor(sf::Color::Green);
+            //    window.draw(circleShape);
+            //}
 
             for (int j = 0; j <= 1; j++)
             {
-                sf::VertexArray lv(sf::Lines, 2);
-                for (int i = 0; i < 2; i++)
+                sf::VertexArray lv(sf::LineStrip, 4);
+                for (int i = 0; i < 3; i++)
                 {
-                    lv[i].position = sf::Vector2f(points[2 * j + i].x, points[2 * j + i].y);
+                    lv[i].position = sf::Vector2f(points[3 * j + i].x, points[3 * j + i].y);
                 }
+                lv[3] = lv[0];
                 window.draw(lv);
             }
 
-            cout << " = " << doIntersect(Segment(points[0], points[1]), Segment(points[2], points[3])) << "\n";
+            Triangle t1(points[0], points[1], points[2]), t2(points[3], points[4], points[5]);
+            if (0)
+            {
+                auto it = getIntersection(t1, t2);
+                //cout << " = " << it.first << "\n";
+
+                if (it.first)
+                {
+                    sf::CircleShape circleShape;
+                    circleShape.setRadius(1.5);
+                    circleShape.setOrigin(sf::Vector2f(1, 1) * circleShape.getRadius());
+                    circleShape.setPosition(sf::Vector2f(it.second.x, it.second.y));
+                    circleShape.setFillColor(sf::Color::Red);
+                    window.draw(circleShape);
+                }
+            }
+            if (1)
+            {
+                auto it = getNearest(t1, t2);
+                {
+                    sf::CircleShape circleShape;
+                    circleShape.setRadius(1.5);
+                    circleShape.setOrigin(sf::Vector2f(1, 1) * circleShape.getRadius());
+                    circleShape.setPosition(sf::Vector2f(it.second.first.x, it.second.first.y));
+                    circleShape.setFillColor(sf::Color::Red);
+                    window.draw(circleShape);
+                } 
+                {
+                    sf::CircleShape circleShape;
+                    circleShape.setRadius(1.5);
+                    circleShape.setOrigin(sf::Vector2f(1, 1) * circleShape.getRadius());
+                    circleShape.setPosition(sf::Vector2f(it.second.second.x, it.second.second.y));
+                    circleShape.setFillColor(sf::Color::Red);
+                    window.draw(circleShape);
+                }
+                sf::VertexArray varray(sf::Lines, 2);
+                varray[0].position = sf::Vector2f(it.second.first.x, it.second.first.y);
+                varray[1].position = sf::Vector2f(it.second.second.x, it.second.second.y);
+                window.draw(varray);
+            }
+
+            //cout << " = " << doIntersect(Segment(points[0], points[1]), Segment(points[2], points[3])) << "\n";
             
             for (int i = 0; i < (int)points.size(); i++)
             {
