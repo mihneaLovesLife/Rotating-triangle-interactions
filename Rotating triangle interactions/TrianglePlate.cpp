@@ -59,6 +59,7 @@ void TrianglePlate::applyForce(Vector position, Vector force)
 void TrianglePlate::clearForces()
 {
 	linearForce = Vector(0, 0);
+	torque = 0;
 }
 
 TrianglePlate::TrianglePlate(Vector a, Vector b, Vector c, double m)

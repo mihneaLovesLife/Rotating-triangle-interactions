@@ -31,6 +31,33 @@ void drawTrianglePlate(const TrianglePlate& plate, sf::RenderWindow& window)
     window.draw(v);
 }
 
+void updateSystem(vector<TrianglePlate>& plates, double dt)
+{
+    if (dt < 1e-10)
+    {
+        return;
+    }
+    for (auto& plate : plates)
+    {
+        plate.clearForces();
+    }
+    int n = (int)plates.size();
+    for (auto& plate : plates)
+    {
+
+        Vector a = plate.centerOfMass + plate.relativea.rotate(plate.angle);
+
+        //plate.applyForce(a, Vector(0, -0.001));
+        Vector dif = Vector(0, 1);
+        plate.applyForce(plate.centerOfMass + Vector(0, 1) * 0.1, Vector(-1, 0) * 1000);
+        plate.applyForce(plate.centerOfMass - Vector(0, 1) * 0.1, Vector(+1, 0) * 1000);
+    }
+    for (auto& plate : plates)
+    {
+        plate.update(dt);
+    }
+}
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(900, 900), "Rotating triangle interactions");
@@ -42,8 +69,11 @@ int main()
 
     sf::Clock frameClock;
 
-    TrianglePlate plate;
-    plate.setPlate(Vector(50 + 30, 50 + 10), Vector(50 + 33, 50 + 16), Vector(50 + 40, 50 + 10), 1);
+    vector<TrianglePlate> plates;
+    plates.push_back(TrianglePlate());
+    //plates.push_back(TrianglePlate());
+
+    plates[0].setPlate(Vector(50 + 30, 50 + 10), Vector(50 + 33, 50 + 16), Vector(50 + 40, 50 + 10), 1);
 
     vector<Vector> points;
     points.push_back(Vector(10, 10));
@@ -104,16 +134,8 @@ int main()
         float dt = frameClock.restart().asSeconds();
         //dt = 0.00001;
 
+        updateSystem(plates, dt);
 
-        Vector a = plate.centerOfMass + plate.relativea.rotate(plate.angle);
-
-        //plate.applyForce(a, Vector(0, -0.001));
-        Vector dif = Vector(0, 1);
-        plate.applyForce(plate.centerOfMass + Vector(0, 1) * 0.1, Vector(-1, 0));
-        plate.applyForce(plate.centerOfMass - Vector(0, 1) * 0.1, Vector(+1, 0));
-        // forces couple
-
-        plate.update(dt);
 
 
         window.clear();
@@ -196,7 +218,10 @@ int main()
             }
         }
 
-        drawTrianglePlate(plate, window);
+        for (auto& plate : plates)
+        {
+            drawTrianglePlate(plate, window);
+        }
         window.display();
 
     }

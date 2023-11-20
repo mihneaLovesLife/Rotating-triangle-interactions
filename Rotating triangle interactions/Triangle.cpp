@@ -114,6 +114,10 @@ pair<double, pair<Vector, Vector>> getNearest(Triangle triangle1, Triangle trian
 				}
 				now.second.first = v1[i];
 				now.second.second = point;
+				if (iter == 1)
+				{
+					swap(now.second.first, now.second.second);
+				}
 				sol = now;
 			}
 		}
