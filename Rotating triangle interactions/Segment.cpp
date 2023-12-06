@@ -21,6 +21,26 @@ Vector Segment::nearestPoint(Vector p)
 	{
 		return a;
 	}
+	/*
+	
+	a --- b
+
+		p
+
+	d = b - a
+	d2 = d.perp()
+
+	p + d2 * ?? = a + q * (b - a)
+	p.x * d2.y + d2.x * d2.y ?? = a.x * d2.y + q * d.x * d2.y
+	p.y * d2.x + d2.y * d2.x * ?? = a.y * d2.x + q * d.y * d2.x
+
+	p.x * d2.y - p.y * d2.x = a.x * d2.y - a.y * d2.x + q * (d.x * d2.y - d.y * d2.x)
+	p X d2 = a X d2 + q * (D X d2)
+	(p - a) X d2 = q * (D X d2)
+
+	q = (p - a) * (b - a) / ((b - a) * (b - a))
+	
+	*/
 	double q = min((double)1, max((double)0, dot(b - a, p - a) / dot(b - a, b - a)));
 	return a + q * (b - a);
 }

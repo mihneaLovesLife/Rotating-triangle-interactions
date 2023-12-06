@@ -1,12 +1,16 @@
+#include <cassert>
 #include "Triangle.h"
 #include "Vector"
 #include "Segment.h"
 #include <algorithm>
 #include <limits>
+#include <optional>
+#include <ranges>
 
 using namespace std;
 
-Triangle::Triangle() 
+
+Triangle::Triangle()
 {
 
 }
@@ -19,19 +23,34 @@ Triangle::Triangle(Vector a, Vector b, Vector c) :
 
 }
 
+bool Triangle::isCounterClockwise()
+{
+	return cross(b - a, c - a) > 0;
+}
+
+std::array<Vector, 3> Triangle::vertices()
+{
+	return std::array<Vector, 3> { a, b, c };
+}
+
+std::array<Segment, 3> Triangle::segments()
+{
+	return std::array<Segment, 3> { Segment(a, b), Segment(b, c), Segment(c, a) };
+}
+
 bool isInside(Triangle triangle, Vector point)
 {
 	Vector a = triangle.a;
 	Vector b = triangle.b;
 	Vector c = triangle.c;
-	
+
 	double area = getArea(a, b, c);
 	double area2 = getArea(a, b, point) + getArea(b, c, point) + getArea(c, a, point);
 
 	return abs(area - area2) < 1e-10;
 }
 
-std::pair<bool, Vector> getIntersection(Triangle triangle1, Triangle triangle2)
+std::optional<Vector> getIntersection(Triangle triangle1, Triangle triangle2)
 {
 	Vector a1 = triangle1.a;
 	Vector b1 = triangle1.b;
@@ -41,13 +60,13 @@ std::pair<bool, Vector> getIntersection(Triangle triangle1, Triangle triangle2)
 	Vector b2 = triangle2.b;
 	Vector c2 = triangle2.c;
 
-	if (isInside(triangle2, a1)) return { true, a1 };
-	if (isInside(triangle2, b1)) return { true, b1 };
-	if (isInside(triangle2, c1)) return { true, c1 };
+	if (isInside(triangle2, a1)) return a1;
+	if (isInside(triangle2, b1)) return b1;
+	if (isInside(triangle2, c1)) return c1;
 
-	if (isInside(triangle1, a2)) return { true, a2 };
-	if (isInside(triangle1, b2)) return { true, b2 };
-	if (isInside(triangle1, c2)) return { true, c2 };
+	if (isInside(triangle1, a2)) return a2;
+	if (isInside(triangle1, b2)) return b2;
+	if (isInside(triangle1, c2)) return c2;
 
 	Segment s0[3];
 	Segment s1[3];
@@ -66,66 +85,70 @@ std::pair<bool, Vector> getIntersection(Triangle triangle1, Triangle triangle2)
 		{
 			if (doIntersect(s0[i], s1[j]))
 			{
-				return { true, getIntersection(s0[i], s1[j]) };
+				return getIntersection(s0[i], s1[j]);
 			}
 		}
 	}
 
-	return { false, Vector() };
+	return {};
 }
 
-
-pair<double, pair<Vector, Vector>> getNearest(Triangle triangle1, Triangle triangle2)
+int side(Vector p1, Vector p2, Vector a)
 {
-	auto it = getIntersection(triangle1, triangle2);
-	if (it.first)
+	return cross(p2 - p1, a - p1) > 0;
+}
+
+pair<double, Segment> getNearest(Triangle triangle1, Triangle triangle2)
+{
+	Triangle::tag = 0;
+	if (auto intersection = getIntersection(triangle1, triangle2))
 	{
-		return { true, {it.second, it.second} };
+		Triangle::tag = 1;
 	}
+	// thePair has logic bug, fix it!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	pair<double, pair<Vector, Vector>> sol;
-	sol.first = std::numeric_limits<double>::infinity();
-
-	Vector v1[3];
-	Vector v2[3];
-
-	v1[0] = triangle1.a;
-	v1[1] = triangle1.b;
-	v1[2] = triangle1.c;
-
-	v2[0] = triangle2.a;
-	v2[1] = triangle2.b;
-	v2[2] = triangle2.c;
-	
-	for (int iter = 0; iter <= 1; iter++)
+	auto getNearest = [&](Triangle& A, Triangle& B, double& globa, bool& taken)
 	{
-		for (int i = 0; i < 3; i++)
+		taken = 0;
+		pair<double, Segment> solution;
+		solution.first = std::numeric_limits<double>::infinity();
+		for (auto& point : A.vertices())
 		{
-			for (int j = 0; j < 3; j++)
+			for (auto& segment : B.segments())
 			{
-				int k = (j + 1) % 3;
-				Segment segment(v2[j], v2[k]);
-				pair<double, pair<Vector, Vector>> now;
-				Vector point = segment.nearestPoint(v1[i]);
-				now.first = distanceSquared(point, v1[i]);
-				if (now.first >= sol.first)
+				Vector nearestPoint = segment.nearestPoint(point);
+				double theDistance = getDistance(nearestPoint, point);
+
+				if (theDistance < globa)
 				{
-					continue;
+					globa = theDistance;
+					Vector segmentNorm = (segment.b - segment.a).perpendicular().normalize();
+					if (!A.isCounterClockwise()) segmentNorm = segmentNorm * -1;
+					taken = 1;
+					Triangle::thePair = { nearestPoint, segmentNorm };
+					solution = { theDistance, {point, nearestPoint } };
 				}
-				now.second.first = v1[i];
-				now.second.second = point;
-				if (iter == 1)
-				{
-					swap(now.second.first, now.second.second);
-				}
-				sol = now;
 			}
 		}
-		for (int i = 0; i < 3; i++)
-		{
-			swap(v1[i], v2[i]);
-		}
+		return solution;
+	};
+	double globa = std::numeric_limits<double>::infinity();
+	bool taken;
+	auto option1 = getNearest(triangle1, triangle2, globa, taken);
+	auto option2 = getNearest(triangle2, triangle1, globa, taken);
+	if (taken) Triangle::thePair.second = Triangle::thePair.second * -1;
+	auto& [distance, segment] = option2;
+	swap(segment.a, segment.b);
+
+	auto cmp = [](auto a, auto b) {return a.first < b.first; };
+	if (Triangle::tag)
+	{
+		auto intersection = getIntersection(triangle1, triangle2);
+		assert(intersection);
+		return { 0, Segment(*intersection, *intersection) };
 	}
-	sol.first = sqrt(sol.first);
-	return sol;
+	return std::ranges::min({ option1, option2 }, cmp);
 }
+
+std::pair<Vector, Vector> Triangle::thePair = { Vector(), Vector() };
+bool Triangle::tag = false;

@@ -30,5 +30,8 @@ public:
 	void clearForces();
 
 	Triangle getTriangle();
+
+	Vector velocityAtPoint(Vector point);
 };
 
+double mod2PI(double angle);

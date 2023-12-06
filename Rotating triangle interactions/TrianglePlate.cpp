@@ -28,6 +28,11 @@ double mod2PI(double angle)
 	return angle;
 }
 
+Vector TrianglePlate::velocityAtPoint(Vector point)
+{
+	return (angularVelocity * (point - centerOfMass).perpendicular()) + linearVelocity;
+}
+
 void TrianglePlate::update(double dt)
 {
 	Vector linearAcceleration = linearForce / mass;
@@ -47,7 +52,7 @@ void TrianglePlate::setPlate(Vector a, Vector b, Vector c, double m)
 	relativeb = b - centerOfMass;
 	relativec = c - centerOfMass;
 	mass = m;
-	momentOfInertia = mass / (float)36 * (distanceSquared(relativea, relativeb) + distanceSquared(relativea, relativec) + distanceSquared(relativeb, relativec));
+	momentOfInertia = mass / (float)1 * (distanceSquared(relativea, relativeb) + distanceSquared(relativea, relativec) + distanceSquared(relativeb, relativec));
 }
 
 void TrianglePlate::applyForce(Vector position, Vector force)
