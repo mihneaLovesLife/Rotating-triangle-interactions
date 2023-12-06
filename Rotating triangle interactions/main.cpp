@@ -77,16 +77,16 @@ void updateSystem(vector<TrianglePlate>& plates, double dt, sf::RenderWindow& wi
 		plate.clearForces();
 	}
 	int n = (int)plates.size();
-	//{
-	//	plates[0].applyForce(plates[0].centerOfMass + Vector(0, 1) * 0.1, Vector(-1, 0) * 2000);
-	//	plates[0].applyForce(plates[0].centerOfMass - Vector(0, 1) * 0.1, Vector(+1, 0) * 1000);
-	//}
-	//{
-	//	plates[1].applyForce(plates[1].centerOfMass, Vector(0, +1) * 4);
-	//}
-	//{
-	//	plates[2].applyForce(plates[2].centerOfMass, Vector(-1, +0.5) * 4);
-	//}
+	{
+		plates[0].applyForce(plates[0].centerOfMass + Vector(0, 1) * 0.1, Vector(-1, 0) * 20000);
+		plates[0].applyForce(plates[0].centerOfMass - Vector(0, 1) * 0.1, Vector(+1, 0) * 10000);
+	}
+	{
+		plates[1].applyForce(plates[1].centerOfMass, Vector(0, +1) * 40);
+	}
+	{
+		plates[2].applyForce(plates[2].centerOfMass, Vector(-1, +0.5) * 40);
+	}
 	vector<pair<Vector, double>> nw(n);
 	for (int i = 0; i < n; i++)
 	{
@@ -145,19 +145,11 @@ void updateSystem(vector<TrianglePlate>& plates, double dt, sf::RenderWindow& wi
 	//		}
 	//	}
 	//}
-	//vector<vector<bool>> is(n, vector<bool>(n, 0));
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = i + 1; j < n; j++)
+		//for (int j = i + 1; j < n; j++)
 		{
-			if (i == j)
-			{
-				continue;
-			}
-			//if (is[i][j]) 
-			//{
-			//	continue;
-			//}
 			auto it = getNearest(newTriangles[i], newTriangles[j]);
 			if (Triangle::tag)
 			{
@@ -172,22 +164,21 @@ void updateSystem(vector<TrianglePlate>& plates, double dt, sf::RenderWindow& wi
 				
 				drawLine(window, point, a.velocityAtPoint(point) * 0.1 + point, sf::Color::Yellow);
 				drawLine(window, point, b.velocityAtPoint(point) * 0.1 + point, sf::Color::Red);
+				drawLine(window, point, (a.velocityAtPoint(point) - b.velocityAtPoint(point)) * 0.1 + point, sf::Color::Magenta);
 				
 				drawLine(window, point, (10 * normal) + point, sf::Color::Green);
 
-				getNearest(newTriangles[i], newTriangles[j]); bool memo1 = Triangle::tag;
-				getNearest(newTriangles[j], newTriangles[i]); bool memo2 = Triangle::tag;
 
 				//cout << " : " << memo1 << " " << memo2 << "\n";
 				icr = 1;
 
-				if (dot(a.velocityAtPoint(point) - b.velocityAtPoint(point), normal) > 0)
+				if ((dot(a.velocityAtPoint(point) - b.velocityAtPoint(point), normal) < 0))
+				//if ((dot(a.velocityAtPoint(point) - b.velocityAtPoint(point), normal) < 0) ^ !((i % 2 + j % 2) % 2))
 				{
 					//drawPoint(window, point, sf::Color::Blue);
 					cout << "\t\t\tship skip\n";
 					continue;
 				}
-				//is[i][j] = is[j][i = 1;
 
 				//drawPoint(window, point, sf::Color::Red);
 				//drawLine(window, point, (100 * normal) + point, sf::Color::Red);
@@ -197,16 +188,16 @@ void updateSystem(vector<TrianglePlate>& plates, double dt, sf::RenderWindow& wi
 				double Down2 = 0;
 				double Down3 = 0;
 				Down1 += dot(normal, normal) * ((double)1 / a.mass + (double)1 / b.mass);
-				Down2 += sqr(dot(normal, (point - a.centerOfMass).perpendicular())) / a.momentOfInertia;
-				Down3 += sqr(dot(normal, (point - b.centerOfMass).perpendicular())) / b.momentOfInertia;
+				//Down2 += sqr(dot(normal, (point - a.centerOfMass).perpendicular())) / a.momentOfInertia;
+				//Down3 += sqr(dot(normal, (point - b.centerOfMass).perpendicular())) / b.momentOfInertia;
 				double impulseDown = Down1 + Down2 + Down3;
 				double impulse = impulseUp / impulseDown;
 
 				a.linearVelocity += (impulse / a.mass) * normal;
-				a.angularVelocity += (dot((point - a.centerOfMass), impulse * normal)) / a.momentOfInertia;
+				//a.angularVelocity += (dot((point - a.centerOfMass), impulse * normal)) / a.momentOfInertia;
 
 				b.linearVelocity += (-impulse / b.mass) * normal;
-				b.angularVelocity += (dot((point - b.centerOfMass), -impulse * normal)) / b.momentOfInertia;
+				//b.angularVelocity += (dot((point - b.centerOfMass), -impulse * normal)) / b.momentOfInertia;
 
 				//cout << "impulse\n";
 				//cnt++;
@@ -265,10 +256,13 @@ int main()
 
 	{
 		plates[0].linearVelocity = Vector(-1, 0) * 100;
+		//plates[0].linearVelocity = Vector(-1, 0) * 0;
 		plates[1].linearVelocity = Vector(0, +1) * 50;
-		plates[2].linearVelocity = Vector(-0.9, +0.8) * 50;
+		//plates[1].linearVelocity = Vector(0, +1) * 0;
+		plates[2].linearVelocity = Vector(-0.9, +0.8) * 70;
 
-		plates[0].angularVelocity = 2;
+		plates[0].angularVelocity = 10;
+		plates[1].angularVelocity = 0.5;
 		plates[2].angularVelocity = 1;
 	}
 
@@ -447,10 +441,41 @@ int main()
 		}
 		window.display();
 
-		if (icr)
+		if (icr && 0)
 		{
-			int x;
-			//cin >> x;
+			while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+			{
+				sf::Event event;
+				while (window.pollEvent(event))
+				{
+					if (event.type == sf::Event::Closed)
+					{
+						window.close();
+					}
+				}
+			}
+			if (0)
+			{
+				bool was = 1, is = 0;
+				while (true)
+				{
+					sf::Event event;
+					while (window.pollEvent(event))
+					{
+						if (event.type == sf::Event::Closed)
+						{
+							window.close();
+						}
+					}
+					is = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
+					if (!was && is)
+					{
+						cout << "break!\n";
+						break;
+					}
+					was = is;
+				}
+			}
 			//sf::sleep(sf::seconds(1));
 		}
 

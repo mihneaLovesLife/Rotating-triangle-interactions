@@ -123,7 +123,7 @@ pair<double, Segment> getNearest(Triangle triangle1, Triangle triangle2)
 				{
 					globa = theDistance;
 					Vector segmentNorm = (segment.b - segment.a).perpendicular().normalize();
-					if (!A.isCounterClockwise()) segmentNorm = segmentNorm * -1;
+					if (!(B.isCounterClockwise())) segmentNorm = segmentNorm * -1;
 					taken = 1;
 					Triangle::thePair = { nearestPoint, segmentNorm };
 					solution = { theDistance, {point, nearestPoint } };
