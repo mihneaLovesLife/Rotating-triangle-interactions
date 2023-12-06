@@ -16,8 +16,22 @@ TrianglePlate::TrianglePlate() :
 	linearForce(Vector(0, 0)),
 	torque(0),
 	mass(0),
-	momentOfInertia(0)
+	momentOfInertia(0),
+	fixed(false)
 {
+
+}
+
+void TrianglePlate::checkFixed()
+{
+	if (fixed)
+	{
+		mass = std::numeric_limits<double>::infinity();
+		mass = 1;
+		linearVelocity = Vector(0, 0);
+		angularVelocity = 0;
+		angle = 0;
+	}
 
 }
 
@@ -35,6 +49,10 @@ Vector TrianglePlate::velocityAtPoint(Vector point)
 
 void TrianglePlate::update(double dt)
 {
+	if (fixed)
+	{
+		return;
+	}
 	Vector linearAcceleration = linearForce / mass;
 	linearVelocity += linearAcceleration * dt;
 
@@ -52,7 +70,7 @@ void TrianglePlate::setPlate(Vector a, Vector b, Vector c, double m)
 	relativeb = b - centerOfMass;
 	relativec = c - centerOfMass;
 	mass = m;
-	momentOfInertia = mass / (float)1 * (distanceSquared(relativea, relativeb) + distanceSquared(relativea, relativec) + distanceSquared(relativeb, relativec));
+	momentOfInertia = mass / (double)1 * (distanceSquared(relativea, relativeb) + distanceSquared(relativea, relativec) + distanceSquared(relativeb, relativec));
 }
 
 void TrianglePlate::applyForce(Vector position, Vector force)
@@ -65,11 +83,6 @@ void TrianglePlate::clearForces()
 {
 	linearForce = Vector(0, 0);
 	torque = 0;
-}
-
-TrianglePlate::TrianglePlate(Vector a, Vector b, Vector c, double m)
-{
-	setPlate(a, b, c, m);
 }
 
 Triangle TrianglePlate::getTriangle()

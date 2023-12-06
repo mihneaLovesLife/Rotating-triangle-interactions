@@ -19,10 +19,10 @@ public:
 	double momentOfInertia;
 
 	double mass;
+	bool fixed;
 
 	TrianglePlate();
-	TrianglePlate(Vector a, Vector b, Vector c, double m);
-
+	
 	void update(double dt);
 	void setPlate(Vector a, Vector b, Vector c, double m);
 
@@ -32,6 +32,9 @@ public:
 	Triangle getTriangle();
 
 	Vector velocityAtPoint(Vector point);
+
+	void checkFixed();
 };
+
 
 double mod2PI(double angle);

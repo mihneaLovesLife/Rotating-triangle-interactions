@@ -68,6 +68,12 @@ void updateSystem(vector<TrianglePlate>& plates, const double dt, const double e
 	{
 		for (int j = i + 1; j < n; j++)
 		{
+			plates[i].checkFixed();
+			plates[j].checkFixed();
+			if (plates[i].fixed && plates[j].fixed)
+			{
+				continue;
+			}
 			auto [distance, _, point, normal] = getNearest(newTriangles[i], newTriangles[j]);
 			if (distance == 0)
 			{
@@ -115,11 +121,24 @@ int main()
 	plates.push_back(TrianglePlate());
 	plates.push_back(TrianglePlate());
 	plates.push_back(TrianglePlate());
+	plates.push_back(TrianglePlate());
+	plates.push_back(TrianglePlate());
+	plates.push_back(TrianglePlate());
+	plates.push_back(TrianglePlate());
 
 	plates[0].setPlate(Vector(50 + 30, 50 + 10), Vector(20 + 33, 50 + 16), Vector(60 + 40, 20 + 10), 1);
 	plates[1].setPlate(Vector(50 - 30, 50 - 10), Vector(50 - 33, 50 - 16), Vector(50 - 40, 50 - 10), 1);
 	plates[2].setPlate(Vector(70 - 30, 50 - 10), Vector(70 - 33, 50 - 16), Vector(70 - 40, 50 - 10), 1);
 	plates[3].setPlate(Vector(20 - 10, 20 - 10), Vector(20 - 10, 20 + 10), Vector(20 + 10, 20 - 10), 1);
+
+	plates[4].setPlate(Vector(0, 0), Vector(0, 100), Vector(-50, 50), 1);
+	plates[5].setPlate(Vector(0, 100), Vector(100, 100), Vector(50, 150), 1);
+	plates[6].setPlate(Vector(100, 100), Vector(100, 0), Vector(150, 50), 1);
+	plates[7].setPlate(Vector(100, 0), Vector(0, 0), Vector(50, -50), 1);
+	plates[4].fixed = 1;
+	plates[5].fixed = 1;
+	plates[6].fixed = 1;
+	plates[7].fixed = 1;
 
 	{
 		plates[0].linearVelocity = Vector(-1, 0) * 10;
@@ -131,6 +150,7 @@ int main()
 		plates[1].angularVelocity = 0.5;
 		plates[2].angularVelocity = 1;
 		plates[3].angularVelocity = 1;
+
 	}
 
 	for (auto& plate : plates)
@@ -167,7 +187,7 @@ int main()
 		}
 
 		window.clear();
-		updateSystem(plates, dt, 1);
+		updateSystem(plates, dt, 0);
 
 		for (auto& plate : plates)
 		{

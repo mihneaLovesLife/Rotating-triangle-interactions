@@ -6,11 +6,9 @@
 #include <array>
 #include <optional>
 
-
-// class ContactInfo
-
-struct NearestInfo
+class ContactInfo
 {
+public:
 	double distance;
 	Segment nearestPairOfPoints;
 	Vector hitPoint;
@@ -36,4 +34,4 @@ public:
 
 bool isInside(Triangle triangle, Vector point);
 std::optional<Vector> getIntersection(Triangle triangle1, Triangle triangle2);
-NearestInfo getNearest(Triangle triangle1, Triangle triangle2);
+ContactInfo getNearest(Triangle triangle1, Triangle triangle2);

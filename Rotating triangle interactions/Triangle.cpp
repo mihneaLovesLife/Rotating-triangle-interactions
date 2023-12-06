@@ -98,11 +98,11 @@ int side(Vector p1, Vector p2, Vector a)
 	return cross(p2 - p1, a - p1) > 0;
 }
 
-NearestInfo getNearest(Triangle triangle1, Triangle triangle2)
+ContactInfo getNearest(Triangle triangle1, Triangle triangle2)
 {
 	auto intersection = getIntersection(triangle1, triangle2);
 	double optimal = std::numeric_limits<double>::infinity();
-	NearestInfo solution;
+	ContactInfo solution;
 	solution.distance = std::numeric_limits<double>::infinity();
 	for (auto& point : triangle1.vertices())
 	{
