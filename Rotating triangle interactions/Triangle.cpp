@@ -98,57 +98,45 @@ int side(Vector p1, Vector p2, Vector a)
 	return cross(p2 - p1, a - p1) > 0;
 }
 
-pair<double, Segment> getNearest(Triangle triangle1, Triangle triangle2)
+NearestInfo getNearest(Triangle triangle1, Triangle triangle2)
 {
-	Triangle::tag = 0;
-	if (auto intersection = getIntersection(triangle1, triangle2))
+	auto intersection = getIntersection(triangle1, triangle2);
+	double optimal = std::numeric_limits<double>::infinity();
+	NearestInfo solution;
+	solution.distance = std::numeric_limits<double>::infinity();
+	for (auto& point : triangle1.vertices())
 	{
-		Triangle::tag = 1;
-	}
-	// thePair has logic bug, fix it!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	auto getNearest = [&](Triangle& A, Triangle& B, double& globa, bool& taken)
-	{
-		taken = 0;
-		pair<double, Segment> solution;
-		solution.first = std::numeric_limits<double>::infinity();
-		for (auto& point : A.vertices())
+		for (auto& segment : triangle2.segments())
 		{
-			for (auto& segment : B.segments())
+			Vector nearestPoint = segment.nearestPoint(point);
+			double theDistance = getDistance(nearestPoint, point);
+			if (theDistance < optimal)
 			{
-				Vector nearestPoint = segment.nearestPoint(point);
-				double theDistance = getDistance(nearestPoint, point);
-
-				if (theDistance < globa)
-				{
-					globa = theDistance;
-					Vector segmentNorm = (segment.b - segment.a).perpendicular().normalize();
-					if (!(B.isCounterClockwise())) segmentNorm = segmentNorm * -1;
-					taken = 1;
-					Triangle::thePair = { nearestPoint, segmentNorm };
-					solution = { theDistance, {point, nearestPoint } };
-				}
+				optimal = theDistance;
+				Vector segmentNorm = (segment.b - segment.a).perpendicular().normalize();
+				if (!triangle2.isCounterClockwise()) segmentNorm = segmentNorm * -1;
+				solution = { theDistance, {point, nearestPoint }, nearestPoint, segmentNorm };
 			}
 		}
-		return solution;
-	};
-	double globa = std::numeric_limits<double>::infinity();
-	bool taken;
-	auto option1 = getNearest(triangle1, triangle2, globa, taken);
-	auto option2 = getNearest(triangle2, triangle1, globa, taken);
-	if (taken) Triangle::thePair.second = Triangle::thePair.second * -1;
-	auto& [distance, segment] = option2;
-	swap(segment.a, segment.b);
-
-	auto cmp = [](auto a, auto b) {return a.first < b.first; };
-	if (Triangle::tag)
-	{
-		auto intersection = getIntersection(triangle1, triangle2);
-		assert(intersection);
-		return { 0, Segment(*intersection, *intersection) };
 	}
-	return std::ranges::min({ option1, option2 }, cmp);
+	for (auto& point : triangle2.vertices())
+	{
+		for (auto& segment : triangle1.segments())
+		{
+			Vector nearestPoint = segment.nearestPoint(point);
+			double theDistance = getDistance(nearestPoint, point);
+			if (theDistance < optimal)
+			{
+				optimal = theDistance;
+				Vector segmentNorm = (segment.b - segment.a).perpendicular().normalize();
+				if (!triangle1.isCounterClockwise()) segmentNorm = segmentNorm * -1;
+				solution = { theDistance, {nearestPoint, point }, nearestPoint, -1 * segmentNorm };
+			}
+		}
+	}
+	if (intersection)
+	{
+		return { 0, Segment(*intersection, *intersection), solution.hitPoint, solution.normal };
+	}
+	return solution;
 }
-
-std::pair<Vector, Vector> Triangle::thePair = { Vector(), Vector() };
-bool Triangle::tag = false;

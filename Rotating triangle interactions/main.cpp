@@ -68,27 +68,21 @@ void updateSystem(vector<TrianglePlate>& plates, const double dt, const double e
 	{
 		for (int j = i + 1; j < n; j++)
 		{
-			auto it = getNearest(newTriangles[i], newTriangles[j]);
-			if (Triangle::tag)
+			auto [distance, _, point, normal] = getNearest(newTriangles[i], newTriangles[j]);
+			if (distance == 0)
 			{
 				TrianglePlate& a = plates[i];
 				TrianglePlate& b = plates[j];
 				
-				Vector point = Triangle::thePair.first;
-				Vector normal = Triangle::thePair.second;
-
 				if (dot(a.velocityAtPoint(point) - b.velocityAtPoint(point), normal) < 0)
 				{
 					continue;
 				}
 				double impulseUp = -(1 + elasticity) * dot(a.velocityAtPoint(point) - b.velocityAtPoint(point), normal);
-				double Down1 = 0;
-				double Down2 = 0;
-				double Down3 = 0;
-				Down1 += dot(normal, normal) * ((double)1 / a.mass + (double)1 / b.mass);
-				Down2 += sqr(dot(normal, (point - a.centerOfMass).perpendicular())) / a.momentOfInertia;
-				Down3 += sqr(dot(normal, (point - b.centerOfMass).perpendicular())) / b.momentOfInertia;
-				double impulseDown = Down1 + Down2 + Down3;
+				double impulseDown = 0;
+				impulseDown += dot(normal, normal) * ((double)1 / a.mass + (double)1 / b.mass);
+				impulseDown += sqr(dot(normal, (point - a.centerOfMass).perpendicular())) / a.momentOfInertia;
+				impulseDown += sqr(dot(normal, (point - b.centerOfMass).perpendicular())) / b.momentOfInertia;
 				double impulse = impulseUp / impulseDown;
 
 				a.linearVelocity += (impulse / a.mass) * normal;
