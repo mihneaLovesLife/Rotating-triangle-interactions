@@ -77,16 +77,16 @@ void updateSystem(vector<TrianglePlate>& plates, double dt, sf::RenderWindow& wi
 		plate.clearForces();
 	}
 	int n = (int)plates.size();
-	{
-		plates[0].applyForce(plates[0].centerOfMass + Vector(0, 1) * 0.1, Vector(-1, 0) * 20000);
-		plates[0].applyForce(plates[0].centerOfMass - Vector(0, 1) * 0.1, Vector(+1, 0) * 10000);
-	}
-	{
-		plates[1].applyForce(plates[1].centerOfMass, Vector(0, +1) * 40);
-	}
-	{
-		plates[2].applyForce(plates[2].centerOfMass, Vector(-1, +0.5) * 40);
-	}
+	//{
+	//	plates[0].applyForce(plates[0].centerOfMass + Vector(0, 1) * 0.1, Vector(-1, 0) * 20000);
+	//	plates[0].applyForce(plates[0].centerOfMass - Vector(0, 1) * 0.1, Vector(+1, 0) * 10000);
+	//}
+	//{
+	//	plates[1].applyForce(plates[1].centerOfMass, Vector(0, +1) * 40);
+	//}
+	//{
+	//	plates[2].applyForce(plates[2].centerOfMass, Vector(-1, +0.5) * 40);
+	//}
 	vector<pair<Vector, double>> nw(n);
 	for (int i = 0; i < n; i++)
 	{
@@ -188,16 +188,16 @@ void updateSystem(vector<TrianglePlate>& plates, double dt, sf::RenderWindow& wi
 				double Down2 = 0;
 				double Down3 = 0;
 				Down1 += dot(normal, normal) * ((double)1 / a.mass + (double)1 / b.mass);
-				//Down2 += sqr(dot(normal, (point - a.centerOfMass).perpendicular())) / a.momentOfInertia;
-				//Down3 += sqr(dot(normal, (point - b.centerOfMass).perpendicular())) / b.momentOfInertia;
+				Down2 += sqr(dot(normal, (point - a.centerOfMass).perpendicular())) / a.momentOfInertia;
+				Down3 += sqr(dot(normal, (point - b.centerOfMass).perpendicular())) / b.momentOfInertia;
 				double impulseDown = Down1 + Down2 + Down3;
 				double impulse = impulseUp / impulseDown;
 
 				a.linearVelocity += (impulse / a.mass) * normal;
-				//a.angularVelocity += (dot((point - a.centerOfMass), impulse * normal)) / a.momentOfInertia;
+				a.angularVelocity += (dot((point - a.centerOfMass), impulse * normal)) / a.momentOfInertia;
 
 				b.linearVelocity += (-impulse / b.mass) * normal;
-				//b.angularVelocity += (dot((point - b.centerOfMass), -impulse * normal)) / b.momentOfInertia;
+				b.angularVelocity += (dot((point - b.centerOfMass), -impulse * normal)) / b.momentOfInertia;
 
 				//cout << "impulse\n";
 				//cnt++;
